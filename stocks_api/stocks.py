@@ -192,6 +192,7 @@ class market_data:
                          ) -> pd.DataFrame:
     
         ''' enriches the stock price data by adding a dates series as index '''
+        
         ticker = market_data.validate_ticker(ticker)
         df = market_data.get_raw_stock_price_series(ticker, start_date, end_date)
         dates = market_data.get_us_bd_timeseries(start_date, end_date)
@@ -240,19 +241,27 @@ class market_data:
         variable_data = f'underlying_ticker={ticker}'
         query = market_data.query_builder(3,'OPT', variable_data)
         return market_data.request_to_df(query)
+ 
     
     def get_news(ticker : str):
         ticker = market_data.validate_ticker(ticker)
         variable_data = f'ticker={ticker}'
         query = market_data.query_builder(2,'NEW', variable_data)
         return  market_data.request_to_df(query)
+ 
     
     def get_tickerlist():
         sp500 = market_data.refresh_sp500_list()
         return sp500['Symbol'].tolist()
+ 
     
     def random_ticker():
         alist = market_data.get_tickerlist()
         ticker = random.choice(alist)
         return ticker
     
+
+
+
+
+
