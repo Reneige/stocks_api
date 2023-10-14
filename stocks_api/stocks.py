@@ -4,14 +4,13 @@ Created on Mon Oct  9 06:59:15 2023
 
 @author: Renea
 """
-
+    
 import json
 import requests
 import pandas as pd
-import holidays
 import random
 from stocks_api.config import API_KEY
-
+import time
 
 
 
@@ -95,6 +94,11 @@ class market_data:
         ''' Queries API and returns data as DataFrame'''
         
         j_data = market_data.request_to_dict(querystring)
+        
+        # if no data or error, return empty df
+        if len(j_data) == 0:
+            return pd.DataFrame()
+        
         df = pd.DataFrame(j_data['results'])
         return df
     
@@ -130,12 +134,14 @@ class market_data:
     
     
         
-    def get_raw_stock_price_series(ticker     : str, 
-                                   start_date : str, 
-                                   end_date   : str, 
-                                   dayfreq=1
-                                   ) -> pd.DataFrame:
-        ''' Eg:
+    def get_stock_series(ticker     : str, 
+                         start_date : str, 
+                         end_date   : str, 
+                         dayfreq=1
+                         ) -> pd.DataFrame:
+        ''' constructs a query for the API to extract raw stock data. 
+            
+            Eg:
             
             ticker      : 'AAPL'
             start_date  : '2022-12-31'
@@ -155,49 +161,17 @@ class market_data:
                           + '?adjusted=true&sort=asc')
         
         query = market_data.query_builder(2, 'AGG', query_variable)
-        return market_data.request_to_df(query)
-    
-    
-    def get_us_bd_timeseries(start_date : str, 
-                             end_date   : str, 
-                             ) -> pd.DataFrame:
-        ''' Creates a dataframe of dates (timeseries) based on the NYSE calendar
+        data = market_data.request_to_df(query)
         
-            Eg:
-            
-            start_date  : '2022-12-31'
-            end_date    : '2023-12-31'
-            
-            returns DataFrame
-        '''
-            
-        # note these use lazy instantiation so fill keys by slicing dates
-        nyse_holidays = holidays.NYSE()
-        nyse_holidays[start_date:end_date]
+        if data.empty:
+            return data
         
-        # create business day series
-        dates = pd.bdate_range(start=start_date,
-                               end=end_date,
-                               freq='C',
-                               weekmask="Mon Tue Wed Thu Fri",
-                               holidays=nyse_holidays)
-        
-    
-        return dates
+        data['date'] = pd.to_datetime(data['t'], unit='ms')
+        data = data.set_index('date')
+        data = data.drop(columns='t')
+        return data
     
     
-    def get_stock_series(ticker     : str, 
-                         start_date : str, 
-                         end_date   : str, 
-                         ) -> pd.DataFrame:
-    
-        ''' enriches the stock price data by adding a dates series as index '''
-        
-        ticker = market_data.validate_ticker(ticker)
-        df = market_data.get_raw_stock_price_series(ticker, start_date, end_date)
-        dates = market_data.get_us_bd_timeseries(start_date, end_date)
-        df.index = dates
-        return df
     
     def search_for_tickers(search_string):
         ''' searches ticker database for a string 
@@ -228,6 +202,9 @@ class market_data:
         '''
         ticker = market_data.validate_ticker(ticker)
         df = market_data.get_stock_series(ticker, start_date, end_date)
+        
+        if df.empty:
+            return
     
         plt = df['c'].plot(color=['dimgrey'])
         plt.legend([ticker])
@@ -254,14 +231,38 @@ class market_data:
         sp500 = market_data.refresh_sp500_list()
         return sp500['Symbol'].tolist()
  
+
+
+class analysis:
     
-    def random_ticker():
-        alist = market_data.get_tickerlist()
-        ticker = random.choice(alist)
+    def __init__(self):
+        self.sp500 = market_data.refresh_sp500_list()
+        self.tickerlist = market_data.get_tickerlist()
+
+    def random_ticker(self):
+        ticker = random.choice(self.tickerlist)
         return ticker
     
 
-
-
-
+    def covariance_matrix(self, *tickers, start_date='2022-12-31', end_date='2023-12-31'):
+        
+        tickers = set(tickers)
+        
+        if len(tickers) > 5:
+            delay = True
+        else:
+            delay = False
+    
+        items = []
+                
+        
+        for ticker in tickers:
+            df = market_data.get_stock_series(ticker, start_date, end_date)
+            df = df[['c']]
+            df = df.rename(columns={'c':ticker})
+            if (delay):
+                time.sleep(12.5)
+            items.append(df)
+    
+        return items
 
