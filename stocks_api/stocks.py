@@ -10,9 +10,11 @@ import requests
 import pandas as pd
 import random
 from stocks_api.config import API_KEY
+from stocks_api.delay import delay
 import time
 
 
+DELAY_QUERY = delay()
 
 class market_data:
     
@@ -27,6 +29,7 @@ class market_data:
           'TIC' : 'reference/tickers?',
           'OPT' : 'reference/options/contracts?',
           'NEW' : 'reference/news?'}    
+    
     
     
     def __init__(self):
@@ -79,7 +82,7 @@ class market_data:
     
     def request_to_dict(querystring: str) -> dict:
         ''' Queries API and returns data as Dict of values '''
-        
+        DELAY_QUERY.step()
         response = requests.get(querystring)
         remote_data = response.text
         data = json.loads(remote_data)
@@ -232,7 +235,6 @@ class market_data:
         return sp500['Symbol'].tolist()
  
 
-
 class analysis:
     
     def __init__(self):
@@ -244,14 +246,9 @@ class analysis:
         return ticker
     
 
-    def covariance_matrix(self, *tickers, start_date='2022-12-31', end_date='2023-12-31'):
+    def price_matrix(self, *tickers, start_date='2022-12-31', end_date='2023-12-31'):
         
         tickers = set(tickers)
-        
-        if len(tickers) > 5:
-            delay = True
-        else:
-            delay = False
     
         items = []
                 
@@ -260,9 +257,11 @@ class analysis:
             df = market_data.get_stock_series(ticker, start_date, end_date)
             df = df[['c']]
             df = df.rename(columns={'c':ticker})
-            if (delay):
-                time.sleep(12.5)
             items.append(df)
     
-        return items
+        data = items.pop()
+        for _df in items:
+            data = data.merge(_df, left_index = True, right_index=True)
+
+        return data
 
