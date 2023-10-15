@@ -22,10 +22,12 @@ analyze = analysis()
 
 
 
-test4 = analyze.covariance_matrix(analyze.random_ticker(),
-                                  analyze.random_ticker(),
-                                  analyze.random_ticker())
-
-
-
+test7 = analyze.price_matrix(analyze.random_ticker(),
+                             analyze.random_ticker(),
+                             analyze.random_ticker(),
+                             analyze.random_ticker(),
+                             analyze.random_ticker(),
+                             analyze.random_ticker()
+                                  
+                                  )
 
