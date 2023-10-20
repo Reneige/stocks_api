@@ -90,6 +90,7 @@ class market_data:
         # if query status is error, return blank dict
         if data['status'] == 'ERROR':
             print("Query Error")
+            print(data)
             return {}
         return data    
     
