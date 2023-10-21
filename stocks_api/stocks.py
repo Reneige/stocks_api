@@ -226,6 +226,8 @@ class market_data:
  
     
     def get_news(ticker : str):
+        ''' returns a dataframe of news items for a ticker'''
+        
         ticker = market_data.validate_ticker(ticker)
         variable_data = f'ticker={ticker}'
         query = market_data.query_builder(2,'NEW', variable_data)
@@ -233,6 +235,8 @@ class market_data:
  
     
     def get_tickerlist():
+        ''' returns a list of tickers from the S&P 500'''
+        
         sp500 = market_data.refresh_sp500_list()
         return sp500['Symbol'].tolist()
  
@@ -243,14 +247,26 @@ class analysis:
         self.sp500 = market_data.refresh_sp500_list()
         self.tickerlist = market_data.get_tickerlist()
 
-    def random_ticker(self):
+    def random_ticker(self) -> str: 
+        ''' returns a random ticker from the S&P 500'''
+        
         ticker = random.choice(self.tickerlist)
         return ticker
-    
 
-    def price_matrix(self, *tickers, start_date='2022-12-31', end_date='2023-12-31'):
+    def n_random_tickers(self, n : int) -> list:
+        ''' returns a list of n random tickers from the S&P 500'''
         
-        tickers = set(tickers)
+        x = []
+        for _ in range(n):
+            ticker = random.choice(self.tickerlist)
+            x.append(ticker)
+        return x
+    
+    def price_matrix(self, ticker_list, start_date='2021-12-31', end_date='2022-12-31') -> pd.DataFrame:
+        ''' returns a dataframe containing the price series of all the tickers fed in as a list'''
+        
+        # converting to set automatically removes duplicates
+        tickers = set(ticker_list)
     
         items = []
                 
