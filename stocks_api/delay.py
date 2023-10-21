@@ -18,13 +18,16 @@ class delay:
             self.history.append(self.now)
             
     def step(self):
-        
+
         self.timetrack()
-        
+
+                
         if (self.check_history()):
             print(f"Exceeded 5 queries per minute - pausing {int(self.get_wait_time())} seconds")
             time.sleep(self.get_wait_time() + 0.5)
-    
+
+
+
     def timetrack(self):
         self.now = time.time()
         self.history.append(self.now)

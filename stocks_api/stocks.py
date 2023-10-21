@@ -254,13 +254,20 @@ class analysis:
         return ticker
 
     def n_random_tickers(self, n : int) -> list:
-        ''' returns a list of n random tickers from the S&P 500'''
+        ''' returns a list of n random tickers from the S&P 500.        
+            Max value for n = 500
+        '''
         
-        x = []
-        for _ in range(n):
+        # set ceiling of n at 100
+        if  n>= 500:
+            n = 500
+        
+        # using a set ensures all items are unique
+        x = set()
+        while len(x) < n:
             ticker = random.choice(self.tickerlist)
-            x.append(ticker)
-        return x
+            x.add(ticker)
+        return list(x)
     
     def price_matrix(self, ticker_list, start_date='2021-12-31', end_date='2022-12-31') -> pd.DataFrame:
         ''' returns a dataframe containing the price series of all the tickers fed in as a list'''
