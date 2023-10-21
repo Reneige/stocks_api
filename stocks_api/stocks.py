@@ -2,7 +2,8 @@
 """
 Created on Mon Oct  9 06:59:15 2023
 
-@author: Renea
+@author: Rene Alby
+
 """
     
 import json
