@@ -14,7 +14,7 @@ from stocks_api.config import API_KEY
 from stocks_api.delay import delay
 
 
-    
+
 DELAY_QUERY = delay()
 
 class market_data:
@@ -31,11 +31,9 @@ class market_data:
           'OPT' : 'reference/options/contracts?',
           'NEW' : 'reference/news?'}    
     
-    if API_KEY == '':
-        print ("WARNING! You must add your free API Key to the config.py file. You can get one any www.polygon.io")
     
     
-    def __init__(self):        
+    def __init__(self):
         pass
 
         

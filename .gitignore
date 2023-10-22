@@ -1,6 +1,13 @@
 /stocks_api/__pycache__
 /__pycache__
-/stocks_api/config.py
+/dist
+/Stocks_API.egg-info
+
+pyproject.toml
+setup.cfg
+setup.py
+
 #*.htm
 #*.png
 #*.xlsx
+RENE_NOTE.txt
