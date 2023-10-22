@@ -12,7 +12,7 @@ import pandas as pd
 import random
 from stocks_api.config import API_KEY
 from stocks_api.delay import delay
-import time
+
 
 
 DELAY_QUERY = delay()
