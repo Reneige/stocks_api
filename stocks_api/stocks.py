@@ -14,7 +14,7 @@ from stocks_api.config import API_KEY
 from stocks_api.delay import delay
 
 
-
+    
 DELAY_QUERY = delay()
 
 class market_data:
@@ -31,9 +31,11 @@ class market_data:
           'OPT' : 'reference/options/contracts?',
           'NEW' : 'reference/news?'}    
     
+    if API_KEY == '':
+        print ("WARNING! You must add your free API Key to the config.py file. You can get one any www.polygon.io")
     
     
-    def __init__(self):
+    def __init__(self):        
         pass
 
         
@@ -51,10 +53,8 @@ class market_data:
     def refresh_sp500_list() -> pd.DataFrame:
         ''' scrapes a list of S&p500 companies from wikipedia and returns as DataFrame '''
         
-        page = requests.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
-        dat = page.text
         try:
-            pd_data = pd.read_html(dat)
+            pd_data = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
         except:
             pd_data = pd.DataFrame()
     
